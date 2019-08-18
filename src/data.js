@@ -1,14 +1,11 @@
-import {getRandomInt} from '../src/util.js';
+import {getRandomInt, getRandomArrayElement, getRandomDate, getRandomBoolean} from '../src/util.js';
+import {TASK_COUNT, TASK_DESCRIPTIONS, TASK_COLORS} from '../src/constants.js';
 
 const getTask = () => ({
-  description: [
-    `Изучить теорию`,
-    `Сделать домашку`,
-    `Пройти интенсив на соточку`
-  ][Math.floor(Math.random() * 3)],
-  dueDate: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
+  description: getRandomArrayElement(TASK_DESCRIPTIONS),
+  dueDate: getRandomDate(),
   repeatingDays: {
-    'mo': Boolean(Math.round(Math.random())),
+    'mo': getRandomBoolean(),
     'tu': false,
     'we': false,
     'th': false,
@@ -21,18 +18,12 @@ const getTask = () => ({
     `practice`,
     `intensive`,
   ]),
-  color: [
-    `black`,
-    `yellow`,
-    `blue`,
-    `green`,
-    `pink`,
-  ][Math.floor(Math.random() * 5)],
-  isFavorite: Boolean(Math.round(Math.random())),
-  isArchive: Boolean(Math.round(Math.random())),
+  color: getRandomArrayElement(TASK_COLORS),
+  isFavorite: getRandomBoolean(),
+  isArchive: getRandomBoolean(),
 });
 
-const tasks = Array.from(Array(getRandomInt())).map(getTask);
+const tasks = Array.from(Array(getRandomInt(TASK_COUNT))).map(getTask);
 
 const filters = [
   {
