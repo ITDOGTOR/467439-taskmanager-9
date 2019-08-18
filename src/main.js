@@ -8,8 +8,11 @@ import {createTaskEditTemplate} from '../src/components/task-edit.js';
 import {createTaskTemplate} from '../src/components/task.js';
 import {createLoadMoreButtonTemplate} from '../src/components/load-more-button.js';
 import {tasks, filters} from '../src/data.js';
+import {TASK_COUNT} from '../src/constants.js';
 
 const taskArray = tasks.slice();
+const {firstRender, moreRender} = TASK_COUNT;
+
 const renderTemplate = (container, template, place = `beforeEnd`) => container.insertAdjacentHTML(place, template);
 const renderListTemplate = (container, list, template, place = `beforeEnd`) => container.insertAdjacentHTML(place, list.map(template).join(``));
 
@@ -30,19 +33,19 @@ const taskListElement = boardElement.querySelector(`.board__tasks`);
 
 renderTemplate(boardElement, createSortingTemplate(), `afterBegin`);
 renderTemplate(taskListElement, createTaskEditTemplate(taskArray.shift()), `afterBegin`);
-renderListTemplate(taskListElement, taskArray.splice(0, 7), createTaskTemplate);
+renderListTemplate(taskListElement, taskArray.splice(0, firstRender), createTaskTemplate);
 renderTemplate(boardElement, createLoadMoreButtonTemplate());
 
 const renderMoreTaskHandler = () => {
-  if (taskArray.length > 0) {
-    renderListTemplate(taskListElement, taskArray.splice(0, 8), createTaskTemplate);
-  }
+  if (taskArray.length) {
+    renderListTemplate(taskListElement, taskArray.splice(0, moreRender), createTaskTemplate);
 
-  if (taskArray.length < 1) {
-    loadMoreElement.style.display = `none`;
-    loadMoreElement.removeEventListener(`click`, renderMoreTaskHandler);
+    if (!taskArray.length) {
+      loadMoreElement.style.display = `none`;
+      loadMoreElement.removeEventListener(`click`, renderMoreTaskHandler);
+    }
   }
-}
+};
 
 const loadMoreElement = boardElement.querySelector(`.load-more`);
 
