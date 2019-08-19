@@ -36,7 +36,7 @@ const filters = [
   },
   {
     title: `today`,
-    count: tasks.filter((it) => it.dueDate === Date.now()).length,
+    count: tasks.filter((it) => new Date(it.dueDate).toDateString() === new Date().toDateString()).length,
   },
   {
     title: `favorites`,
