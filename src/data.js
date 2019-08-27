@@ -23,37 +23,37 @@ const getTask = () => ({
   isArchive: getRandomBoolean(),
 });
 
-const tasks = Array.from(Array(getRandomInt(TASK_COUNT))).map(getTask);
+const taskMocks = Array.from(Array(getRandomInt(TASK_COUNT))).map(getTask);
 
 const filters = [
   {
     title: `all`,
-    count: tasks.length,
+    count: taskMocks.length,
   },
   {
     title: `overdue`,
-    count: tasks.filter((it) => it.dueDate < Date.now()).length,
+    count: taskMocks.filter((it) => it.dueDate < Date.now()).length,
   },
   {
     title: `today`,
-    count: tasks.filter((it) => new Date(it.dueDate).toDateString() === new Date().toDateString()).length,
+    count: taskMocks.filter((it) => new Date(it.dueDate).toDateString() === new Date().toDateString()).length,
   },
   {
     title: `favorites`,
-    count: tasks.filter((it) => it.isFavorite).length,
+    count: taskMocks.filter((it) => it.isFavorite).length,
   },
   {
     title: `repeating`,
-    count: tasks.filter((it) => Object.keys(it.repeatingDays).some((day) => it.repeatingDays[day])).length,
+    count: taskMocks.filter((it) => Object.keys(it.repeatingDays).some((day) => it.repeatingDays[day])).length,
   },
   {
     title: `tags`,
-    count: tasks.filter((it) => it.tags).length,
+    count: taskMocks.filter((it) => it.tags).length,
   },
   {
     title: `archive`,
-    count: tasks.filter((it) => it.isArchive).length,
+    count: taskMocks.filter((it) => it.isArchive).length,
   }
 ];
 
-export {tasks, filters};
+export {taskMocks, filters};
