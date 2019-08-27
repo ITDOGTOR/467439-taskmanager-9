@@ -21,16 +21,18 @@ export default class Filter {
   }
 
   getTemplate() {
-    return `<input
-      type="radio"
-      id="filter__${this._title}"
-      class="filter__input visually-hidden"
-      name="filter"
-      ${this._title === `all` ? `checked` : ``}
-      ${this._count ? `` : `disabled`}
-    />
-    <label for="filter__${this._title}" class="filter__label">
-      ${this._title} <span class="filter__${this._title}-count">${this._count}</span></label
-    >`;
+    return `<span>
+      <input
+        type="radio"
+        id="filter__${this._title}"
+        class="filter__input visually-hidden"
+        name="filter"
+        ${this._title === `all` ? `checked` : ``}
+        ${this._count ? `` : `disabled`}
+      />
+      <label for="filter__${this._title}" class="filter__label">
+        ${this._title} <span class="filter__${this._title}-count">${this._count}</span></label
+      >
+    </span>`;
   }
 }
