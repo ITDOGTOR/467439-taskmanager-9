@@ -1,8 +1,7 @@
 const TASK_COUNT = {
-  min: 16,
+  min: 9,
   max: 50,
-  firstRender: 7,
-  moreRender: 8,
+  render: 8,
 };
 
 const TASK_DESCRIPTIONS = [

@@ -1,6 +1,6 @@
 import {createElement, unrenderElement} from '../util.js';
 
-export default class LoadMoreButton {
+export default class FiltersContainer {
   constructor() {
     this._element = null;
   }
@@ -19,6 +19,7 @@ export default class LoadMoreButton {
   }
 
   getTemplate() {
-    return `<button class="load-more" type="button">load more</button>`;
+    return `<section class="main__filter filter container">
+    </section>`;
   }
 }
