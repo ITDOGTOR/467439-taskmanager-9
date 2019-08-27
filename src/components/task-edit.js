@@ -1,6 +1,6 @@
 import {createElement, unrenderElement} from '../util.js';
 
-export class TaskEdit {
+export default class TaskEdit {
   constructor({description, dueDate, repeatingDays, tags, color}) {
     this._description = description;
     this._dueDate = new Date(dueDate);
