@@ -25,7 +25,7 @@ const getTask = () => ({
 
 const taskMocks = Array.from(Array(getRandomInt(TASK_COUNT))).map(getTask);
 
-const filters = [
+const filtersList = [
   {
     title: `all`,
     count: taskMocks.length,
@@ -56,4 +56,4 @@ const filters = [
   }
 ];
 
-export {taskMocks, filters};
+export {taskMocks, filtersList};
