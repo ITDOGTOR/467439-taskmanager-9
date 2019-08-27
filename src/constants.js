@@ -1,5 +1,5 @@
 const TASK_COUNT = {
-  min: 16,
+  min: 9,
   max: 50,
   render: 8,
 };
