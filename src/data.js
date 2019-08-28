@@ -24,36 +24,36 @@ const getTask = () => ({
 });
 
 const taskMocks = Array.from(Array(getRandomInt(TASK_COUNT))).map(getTask);
-const filterCount = (callback = true) => taskMocks.filter(() => callback).length;
+const getFilterCount = (callback) => taskMocks.filter((it) => callback(it)).length;
 
 const filtersList = [
   {
     title: `all`,
-    count: filterCount(),
+    count: getFilterCount(() => true),
   },
   {
     title: `overdue`,
-    count: filterCount(taskMocks.dueDate < Date.now()),
+    count: getFilterCount((it) => it.dueDate < Date.now()),
   },
   {
     title: `today`,
-    count: filterCount(new Date(taskMocks.dueDate).toDateString() === new Date().toDateString()),
+    count: getFilterCount((it) => new Date(it.dueDate).toDateString() === new Date().toDateString()),
   },
   {
     title: `favorites`,
-    count: filterCount(taskMocks.isFavorite),
+    count: getFilterCount((it) => it.isFavorite),
   },
   {
     title: `repeating`,
-    count: taskMocks.filter((it) => Object.keys(it.repeatingDays).some((day) => it.repeatingDays[day])).length,
+    count: getFilterCount((it) => Object.keys(it.repeatingDays).some((day) => it.repeatingDays[day])),
   },
   {
     title: `tags`,
-    count: filterCount(taskMocks.tags),
+    count: getFilterCount((it) => it.tags),
   },
   {
     title: `archive`,
-    count: filterCount(taskMocks.isArchive),
+    count: getFilterCount((it) => it.isArchive),
   }
 ];
 
