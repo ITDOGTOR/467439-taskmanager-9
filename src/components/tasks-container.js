@@ -1,6 +1,6 @@
 import {createElement, unrenderElement} from '../util.js';
 
-export default class Board {
+export default class TasksContainer {
   constructor() {
     this._element = null;
   }
@@ -19,7 +19,7 @@ export default class Board {
   }
 
   getTemplate() {
-    return `<section class="board container">
-    </section>`;
+    return `<div class="board__tasks">
+    </div>`;
   }
 }
