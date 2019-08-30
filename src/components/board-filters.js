@@ -1,10 +1,6 @@
 import AbstractComponent from '../components/abstract-component.js';
 
 export default class BoardFilters extends AbstractComponent {
-  constructor() {
-    super();
-  }
-
   getTemplate() {
     return `<div class="board__filter-list">
       <a href="#" class="board__filter">SORT BY DEFAULT</a>
