@@ -1,29 +1,33 @@
 import AbstractComponent from '../components/abstract-component.js';
 
 export default class Task extends AbstractComponent {
-  constructor({description, dueDate, repeatingDays, tags, color}) {
+  constructor({description, dueDate, repeatingDays, tags, color, isArchive, isFavorite}) {
     super();
     this._description = description;
     this._dueDate = new Date(dueDate);
     this._repeatingDays = repeatingDays;
     this._tags = tags;
     this._color = color;
+    this._isArchive = isArchive;
+    this._isFavorite = isFavorite;
+    this._isRepeat = Object.values(this._repeatingDays).some((it) => it === true);
   }
 
   getTemplate() {
-    return `<article class="card card--${this._color} ${Object.values(this._repeatingDays).some((it) => it === true) ? `card--repeat` : ``}">
+    // Временное решение для дедлайна карточки
+    return `<article class="card card--${this._color} ${this._isRepeat ? `card--repeat` : ``} ${this._dueDate > Date.now() + 399999999 ? `card--deadline` : ``}">
       <div class="card__form">
         <div class="card__inner">
           <div class="card__control">
             <button type="button" class="card__btn card__btn--edit">
               edit
             </button>
-            <button type="button" class="card__btn card__btn--archive">
+            <button type="button" class="card__btn card__btn--archive ${this._isArchive ? `card__btn--disabled` : ``}">
               archive
             </button>
             <button
               type="button"
-              class="card__btn card__btn--favorites card__btn--disabled"
+              class="card__btn card__btn--favorites ${this._isFavorite ? `card__btn--disabled` : ``}"
             >
               favorites
             </button>
