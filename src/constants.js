@@ -4,13 +4,13 @@ const TASK_COUNT = {
   render: 8,
 };
 
-const TASK_DESCRIPTIONS = [
+const DESCRIPTIONS = [
   `Изучить теорию`,
   `Сделать домашку`,
   `Пройти интенсив на соточку`
 ];
 
-const TASK_COLORS = [
+const COLORS = [
   `black`,
   `yellow`,
   `blue`,
@@ -18,4 +18,4 @@ const TASK_COLORS = [
   `pink`
 ];
 
-export {TASK_COUNT, TASK_DESCRIPTIONS, TASK_COLORS};
+export {TASK_COUNT, DESCRIPTIONS, COLORS};
