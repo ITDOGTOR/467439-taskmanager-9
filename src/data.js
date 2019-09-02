@@ -1,24 +1,24 @@
 import {getRandomInt, getRandomArrayElement, getRandomDate, getRandomBoolean} from '../src/util.js';
-import {TASK_COUNT, TASK_DESCRIPTIONS, TASK_COLORS} from '../src/constants.js';
+import {TASK_COUNT, DESCRIPTIONS, COLORS} from '../src/constants.js';
 
 const getTask = () => ({
-  description: getRandomArrayElement(TASK_DESCRIPTIONS),
+  description: getRandomArrayElement(DESCRIPTIONS),
   dueDate: getRandomDate(),
   repeatingDays: {
     'mo': getRandomBoolean(),
     'tu': false,
     'we': false,
-    'th': false,
+    'th': getRandomBoolean(),
     'fr': false,
     'sa': false,
-    'su': false,
+    'su': getRandomBoolean(),
   },
   tags: new Set([
     `homework`,
     `practice`,
     `intensive`,
   ]),
-  color: getRandomArrayElement(TASK_COLORS),
+  color: getRandomArrayElement(COLORS),
   isFavorite: getRandomBoolean(),
   isArchive: getRandomBoolean(),
 });
