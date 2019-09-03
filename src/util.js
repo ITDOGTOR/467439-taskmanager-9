@@ -5,7 +5,8 @@ const Key = {
 
 const Position = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  AFTEREND: `afterend`,
 };
 
 const createElement = (template) => {
@@ -21,6 +22,9 @@ const renderElement = (container, element, place = Position.BEFOREEND) => {
       break;
     case Position.BEFOREEND:
       container.append(element);
+      break;
+    case Position.AFTEREND:
+      container.after(element);
       break;
   }
 };
