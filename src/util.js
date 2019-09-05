@@ -1,6 +1,7 @@
 const Key = {
   ESCAPE_IE: `Escape`,
   ESCAPE: `Esc`,
+  ENTER: `Enter`,
 };
 
 const Position = {
