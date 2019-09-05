@@ -1,5 +1,6 @@
 import AbstractComponent from '../components/abstract-component.js';
 
+import {Key, unrenderElement} from '../util.js';
 import {COLORS} from '../constants.js';
 
 export default class TaskEdit extends AbstractComponent {
@@ -12,7 +13,96 @@ export default class TaskEdit extends AbstractComponent {
     this._color = color;
     this._isFavorite = isFavorite;
     this._isArchive = isArchive;
+
     this._isRepeat = Object.values(this._repeatingDays).some((it) => it === true);
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const dateDeadline = this.getElement().querySelector(`.card__date-deadline`);
+    const dateDeadlineInput = this.getElement().querySelector(`.card__date`);
+    const dateStatus = this.getElement().querySelector(`.card__date-status`);
+
+    const repeatDays = this.getElement().querySelector(`.card__repeat-days`);
+    const repeatDaysInputs = this.getElement().querySelectorAll(`.card__repeat-day-input`);
+    const repeatStatus = this.getElement().querySelector(`.card__repeat-status`);
+
+    const addToArchive = this.getElement().querySelector(`.card__btn--archive`);
+    const addToFavorite = this.getElement().querySelector(`.card__btn--favorites`);
+
+    this.getElement().querySelector(`.card__hashtag-input`).addEventListener(`keydown`, (evt) => {
+      if (evt.key === Key.ENTER) {
+        evt.preventDefault();
+
+        this.getElement().querySelector(`.card__hashtag-list`).insertAdjacentHTML(`beforeend`, `<span class="card__hashtag-inner">
+          <input
+            type="hidden"
+            name="hashtag"
+            value="${evt.target.value}"
+            class="card__hashtag-hidden-input"
+          />
+          <p class="card__hashtag-name">
+            #${evt.target.value}
+          </p>
+          <button type="button" class="card__hashtag-delete">
+            delete
+          </button>
+        </span>`);
+
+        evt.target.value = ``;
+      }
+    });
+
+    this.getElement().querySelector(`.card__hashtag-list`).addEventListener(`click`, (evt) => {
+      if (evt.target.classList.contains(`card__hashtag-delete`)) {
+        unrenderElement(evt.target.parentNode);
+      }
+    });
+
+    this.getElement().querySelector(`.card__colors-wrap`).addEventListener(`click`, (evt) => {
+      if (evt.target.nodeName === `INPUT`) {
+        this.getElement().classList.remove(`card--black`, `card--yellow`, `card--blue`, `card--pink`, `card--green`);
+        this.getElement().classList.add(`card--${evt.target.value}`);
+      }
+    });
+
+    this.getElement().querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, () => {
+      if (!(repeatDays.classList.contains(`visually-hidden`))) {
+        repeatStatus.textContent = `no`;
+        repeatDays.classList.add(`visually-hidden`);
+        repeatDaysInputs.forEach((day) => {
+          day.checked = false;
+        });
+      }
+
+      const newStatus = dateDeadline.classList.contains(`visually-hidden`) ? `yes` : `no`;
+      dateDeadline.classList.toggle(`visually-hidden`);
+      dateStatus.textContent = newStatus;
+      dateDeadlineInput.value = ``;
+    });
+
+    this.getElement().querySelector(`.card__repeat-toggle`).addEventListener(`click`, () => {
+      if (!(dateDeadline.classList.contains(`visually-hidden`))) {
+        dateStatus.textContent = `no`;
+        dateDeadline.classList.add(`visually-hidden`);
+        dateDeadlineInput.value = ``;
+      }
+
+      const newDate = repeatDays.classList.contains(`visually-hidden`) ? `yes` : `no`;
+      repeatDays.classList.toggle(`visually-hidden`);
+      repeatStatus.textContent = newDate;
+      repeatDaysInputs.forEach((day) => {
+        day.checked = false;
+      });
+    });
+
+    addToArchive.addEventListener(`click`, () => {
+      addToArchive.classList.toggle(`card__btn--disabled`);
+    });
+
+    addToFavorite.addEventListener(`click`, () => {
+      addToFavorite.classList.toggle(`card__btn--disabled`);
+    });
   }
 
   getTemplate() {
