@@ -1,15 +1,15 @@
 import Board from '../components/board.js';
 import Sort from '../components/sort.js';
+import TaskController from '../controllers/task-controller.js';
 import TaskContainer from '../components/tasks-container.js';
-import Task from '../components/task.js';
-import TaskEdit from '../components/task-edit.js';
 import LoadMoreButton from '../components/load-more-button.js';
 import NoTasks from '../components/no-tasks.js';
-import {renderElement, unrenderElement, Key, Position} from '../util.js';
+
+import {renderElement, unrenderElement, Position} from '../util.js';
 import {TASK_COUNT} from '../constants.js';
 
 const {render} = TASK_COUNT;
-const {AFTERBEGIN} = Position;
+const {AFTERBEGIN, AFTEREND} = Position;
 
 export default class BoardController {
   constructor(container, tasks) {
@@ -20,49 +20,41 @@ export default class BoardController {
     this._taskContainer = new TaskContainer();
     this._loadMoreButton = new LoadMoreButton();
     this._noTasks = new NoTasks();
+
     this._unrenderedTasks = null;
+    this._visibleTasks = render;
+
+    this._subscriptions = [];
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onChangeView = this._onChangeView.bind(this);
   }
 
-  _renderTask(task) {
-    const taskComponent = new Task(task);
-    const taskEditComponent = new TaskEdit(task);
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === Key.ESCAPE_IE || evt.key === Key.ESCAPE) {
-        this._taskContainer.getElement().replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    taskComponent.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
-      this._taskContainer.getElement().replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    taskEditComponent.getElement().querySelector(`textarea`).addEventListener(`focus`, () => {
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    taskEditComponent.getElement().querySelector(`textarea`).addEventListener(`blur`, () => {
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    taskEditComponent.getElement().querySelector(`.card__save`).addEventListener(`click`, () => {
-      this._taskContainer.getElement().replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    renderElement(this._taskContainer.getElement(), taskComponent.getElement());
+  _renderBoard(tasks) {
+    this._taskContainer.removeElement();
+    renderElement(this._sort.getElement(), this._taskContainer.getElement(), AFTEREND);
+    this._renderTasks(tasks.slice(), this._visibleTasks);
   }
 
-  _renderTasks(taskList) {
-    taskList.splice(0, render).forEach((task) => this._renderTask(task));
+  _renderTasks(taskList, count = render) {
+    taskList.splice(0, count).forEach((task) => {
+      const taskController = new TaskController(this._taskContainer, task, this._onDataChange, this._onChangeView);
+      this._subscriptions.push(taskController.setDefaultView.bind(taskController));
+    });
   }
 
   _renderLoadMoreButton(taskList) {
     if (taskList.length > render) {
       renderElement(this._board.getElement(), this._loadMoreButton.getElement());
     }
+  }
+
+  _onDataChange(newData, oldData) {
+    this._tasks[this._tasks.findIndex((it) => it === oldData)] = newData;
+    this._renderBoard(this._tasks);
+  }
+
+  _onChangeView() {
+    this._subscriptions.forEach((subscription) => subscription());
   }
 
   _onSortLinkClick(evt) {
@@ -74,8 +66,7 @@ export default class BoardController {
 
     const getSortedTasks = (callback) => {
       const sortedTasks = this._tasks.slice().sort((a, b) => callback(a, b));
-      this._renderLoadMoreButton(sortedTasks);
-      this._renderTasks(sortedTasks);
+      this._renderTasks(sortedTasks, this._visibleTasks);
       this._unrenderedTasks = sortedTasks;
     };
 
@@ -114,6 +105,7 @@ export default class BoardController {
     this._loadMoreButton.getElement().addEventListener(`click`, () => {
       if (this._unrenderedTasks.length) {
         this._renderTasks(this._unrenderedTasks);
+        this._visibleTasks = this._tasks.length - this._unrenderedTasks.length;
 
         if (!this._unrenderedTasks.length) {
           unrenderElement(this._loadMoreButton.getElement());
