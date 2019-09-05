@@ -29,11 +29,11 @@ const getFilterCount = (callback) => taskMocks.filter((it) => callback(it)).leng
 const filtersList = [
   {
     title: `all`,
-    count: getFilterCount(() => true),
+    count: getFilterCount((it) => !it.isArchive),
   },
   {
     title: `overdue`,
-    count: getFilterCount((it) => it.dueDate < Date.now()),
+    count: getFilterCount((it) => it.dueDate > Date.now() + 399999999), // Временное решение
   },
   {
     title: `today`,
