@@ -7,7 +7,7 @@ import BoardController from '../src/controllers/board-controller.js';
 import {taskMocks, filtersList} from '../src/data.js';
 import {renderElement} from '../src/util.js';
 
-const copyTasks = taskMocks.slice();
+const copyTasks = taskMocks.slice().filter((task) => !task.isArchive);
 
 const renderFilter = (filter) => {
   const filterElement = new Filter(filter);

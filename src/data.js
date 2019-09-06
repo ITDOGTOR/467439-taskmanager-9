@@ -1,24 +1,24 @@
 import {getRandomInt, getRandomArrayElement, getRandomDate, getRandomBoolean} from '../src/util.js';
-import {TASK_COUNT, TASK_DESCRIPTIONS, TASK_COLORS} from '../src/constants.js';
+import {TASK_COUNT, DESCRIPTIONS, COLORS} from '../src/constants.js';
 
 const getTask = () => ({
-  description: getRandomArrayElement(TASK_DESCRIPTIONS),
+  description: getRandomArrayElement(DESCRIPTIONS),
   dueDate: getRandomDate(),
   repeatingDays: {
     'mo': getRandomBoolean(),
     'tu': false,
     'we': false,
-    'th': false,
+    'th': getRandomBoolean(),
     'fr': false,
     'sa': false,
-    'su': false,
+    'su': getRandomBoolean(),
   },
   tags: new Set([
     `homework`,
     `practice`,
     `intensive`,
   ]),
-  color: getRandomArrayElement(TASK_COLORS),
+  color: getRandomArrayElement(COLORS),
   isFavorite: getRandomBoolean(),
   isArchive: getRandomBoolean(),
 });
@@ -29,11 +29,11 @@ const getFilterCount = (callback) => taskMocks.filter((it) => callback(it)).leng
 const filtersList = [
   {
     title: `all`,
-    count: getFilterCount(() => true),
+    count: getFilterCount((it) => !it.isArchive),
   },
   {
     title: `overdue`,
-    count: getFilterCount((it) => it.dueDate < Date.now()),
+    count: getFilterCount((it) => it.dueDate > Date.now() + 399999999), // Временное решение
   },
   {
     title: `today`,
