@@ -1,3 +1,7 @@
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
+
 import Task from '../components/task.js';
 import TaskEdit from '../components/task-edit.js';
 
@@ -20,6 +24,15 @@ export default class TaskController {
   }
 
   create() {
+    flatpickr(this._taskEditComponent.getElement().querySelector(`.card__date`), {
+      altInput: true,
+      allowInput: true,
+      enableTime: true,
+      altFormat: `j F G:i K`,
+      dateFormat: `j F G:i K`,
+      defaultDate: this._data.dueDate !== null ? this._data.dueDate : `today`,
+    });
+
     const onEscKeyDown = (evt) => {
       if (this._container.getElement().contains(this._taskEditComponent.getElement()) && (evt.key === Key.ESCAPE_IE || evt.key === Key.ESCAPE)) {
         this._replaceConditionTask(this._taskComponent.getElement(), this._taskEditComponent.getElement());
@@ -29,6 +42,8 @@ export default class TaskController {
     };
 
     const addTo = (container) => container.classList.contains(`card__btn--disabled`) ? true : false;
+
+    const dateStatus = this._taskEditComponent.getElement().querySelector(`.card__date-status`);
 
     this._taskComponent.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
@@ -60,7 +75,7 @@ export default class TaskController {
         description: formData.get(`text`),
         color: formData.get(`color`),
         tags: new Set(formData.getAll(`hashtag`)),
-        dueDate: new Date(formData.get(`date`)),
+        dueDate: dateStatus.innerText === `YES` ? new Date(formData.get(`date`)) : null,
         repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
           acc[it] = true;
           return acc;
