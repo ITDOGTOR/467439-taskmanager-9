@@ -28,8 +28,6 @@ export default class TaskController {
       altInput: true,
       allowInput: true,
       enableTime: true,
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
       altFormat: `j F G:i K`,
       dateFormat: `j F G:i K`,
       defaultDate: this._data.dueDate !== null ? this._data.dueDate : `today`,
