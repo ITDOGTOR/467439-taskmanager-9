@@ -113,4 +113,12 @@ export default class BoardController {
       }
     });
   }
+
+  hide() {
+    this._board.getElement().classList.add(`visually-hidden`);
+  }
+
+  show() {
+    this._board.getElement().classList.remove(`visually-hidden`);
+  }
 }
