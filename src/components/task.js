@@ -5,18 +5,19 @@ export default class Task extends AbstractComponent {
   constructor({description, dueDate, repeatingDays, tags, color, isArchive, isFavorite}) {
     super();
     this._description = description;
-    this._dueDate = dueDate;
+    this._dueDate = dueDate !== null ? new Date(dueDate) : null;
     this._repeatingDays = repeatingDays;
     this._tags = tags;
     this._color = color;
     this._isArchive = isArchive;
     this._isFavorite = isFavorite;
     this._isRepeat = Object.values(this._repeatingDays).some((it) => it === true);
+
+    this._isDeadLine = moment(Date.now()).subtract(1, `days`).isAfter(this._dueDate);
   }
 
   getTemplate() {
-    // Временное решение для дедлайна карточки
-    return `<article class="card card--${this._color} ${this._isRepeat ? `card--repeat` : ``} ${this._dueDate > Date.now() + 399999999 ? `card--deadline` : ``}">
+    return `<article class="card card--${this._color} ${this._isRepeat ? `card--repeat` : ``} ${this._isDeadLine ? `card--deadline` : ``}">
       <div class="card__form">
         <div class="card__inner">
           <div class="card__control">
