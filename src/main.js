@@ -8,7 +8,12 @@ import BoardController from '../src/controllers/board-controller.js';
 import {taskMocks, filtersList} from '../src/data.js';
 import {renderElement} from '../src/util.js';
 
-const copyTasks = taskMocks.slice().filter((task) => !task.isArchive);
+const IdValues = {
+  TASKS: `control__task`,
+  STATISTICS: `control__statistic`,
+  ADD_NEW_TASKS: `control__new-task`,
+};
+const {TASKS, STATISTICS, ADD_NEW_TASKS} = IdValues;
 
 const renderFilter = (filter) => {
   const filterElement = new Filter(filter);
@@ -18,6 +23,12 @@ const renderFilter = (filter) => {
 };
 
 const renderFilters = (filters) => filters.forEach((filter) => renderFilter(filter));
+
+const onDataChange = (tasks) => {
+  copyTasks = tasks;
+};
+
+let copyTasks = taskMocks;
 
 const mainContainer = document.querySelector(`.main`);
 const menuContainer = mainContainer.querySelector(`.main__control`);
@@ -34,8 +45,9 @@ renderElement(mainContainer, search.getElement());
 renderElement(mainContainer, filtersContainer.getElement());
 renderFilters(filtersList);
 renderElement(mainContainer, statistics.getElement());
-const boardController = new BoardController(mainContainer, copyTasks);
-boardController.init();
+
+const boardController = new BoardController(mainContainer, onDataChange);
+boardController._show(copyTasks);
 
 menu.getElement().addEventListener(`change`, (evt) => {
   evt.preventDefault();
@@ -45,13 +57,17 @@ menu.getElement().addEventListener(`change`, (evt) => {
   }
 
   switch (evt.target.id) {
-    case `control__task`:
+    case TASKS:
       statistics.getElement().classList.add(`visually-hidden`);
-      boardController.show();
+      boardController._show(copyTasks);
       break;
-    case `control__statistic`:
-      boardController.hide();
+    case STATISTICS:
+      boardController._hide();
       statistics.getElement().classList.remove(`visually-hidden`);
+      break;
+    case ADD_NEW_TASKS:
+      boardController._renderNewTask();
+      menu.getElement().querySelector(`#${TASKS}`).checked = true; // Возвращает состояние checked TASKS
       break;
   }
 });
