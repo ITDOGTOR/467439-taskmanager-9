@@ -25,8 +25,6 @@ export default class TaskController {
     this._taskView = new Task(data);
     this._taskEdit = new TaskEdit(data);
 
-    this._updateData = this._getNewTaskData();
-
     this.init(mode);
   }
 
@@ -34,7 +32,7 @@ export default class TaskController {
     this._container.replaceChild(condition1, condition2);
   }
 
-  _getNewTaskData() {
+  _getNewData() {
     const addTo = (container) => container.classList.contains(`card__btn--disabled`) ? true : false;
 
     const dateStatus = this._taskEdit.getElement().querySelector(`.card__date-status`);
@@ -44,7 +42,7 @@ export default class TaskController {
       description: formData.get(`text`),
       color: formData.get(`color`),
       tags: new Set(formData.getAll(`hashtag`)),
-      dueDate: dateStatus.innerText === `YES` ? new Date(isFinite(formData.get(`date`)) ? parseInt(formData.get(`date`), 10) : formData.get(`date`)) : null,
+      dueDate: dateStatus.innerText.toUpperCase() === `YES` ? new Date(isFinite(formData.get(`date`)) ? parseInt(formData.get(`date`), 10) : formData.get(`date`)) : null,
       repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
         acc[it] = true;
         return acc;
@@ -64,13 +62,13 @@ export default class TaskController {
     return entry;
   }
 
-  _setBooleanValue(evt, value) {
+  _setBooleanValue(evt, data, value) {
     if (evt.currentTarget.classList.contains(`card__btn--disabled`)) {
       evt.currentTarget.classList.remove(`card__btn--disabled`);
-      this._updateData[value] = false;
+      data[value] = false;
     } else {
       evt.currentTarget.classList.add(`card__btn--disabled`);
-      this._updateData[value] = true;
+      data[value] = true;
     }
   }
 
@@ -101,13 +99,15 @@ export default class TaskController {
     };
 
     this._taskView.getElement().querySelector(`.card__btn--archive`).addEventListener(`click`, (evt) => {
-      this._setBooleanValue(evt, `isArchive`);
-      this._onDataChange(this._updateData, this._data);
+      const updateData = this._getNewData();
+      this._setBooleanValue(evt, updateData, `isArchive`);
+      this._onDataChange(updateData, this._data);
     });
 
     this._taskView.getElement().querySelector(`.card__btn--favorites`).addEventListener(`click`, (evt) => {
-      this._setBooleanValue(evt, `isFavorite`);
-      this._onDataChange(this._updateData, this._data);
+      const updateData = this._getNewData();
+      this._setBooleanValue(evt, updateData, `isFavorite`);
+      this._onDataChange(updateData, this._data);
     });
 
     this._taskView.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, (evt) => {
@@ -131,7 +131,7 @@ export default class TaskController {
     this._taskEdit.getElement().querySelector(`.card__form`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
 
-      const entry = this._getNewTaskData();
+      const entry = this._getNewData();
       this._onDataChange(entry, mode === DEFAULT ? this._data : null);
 
       document.removeEventListener(`keydown`, onEscKeyDown);

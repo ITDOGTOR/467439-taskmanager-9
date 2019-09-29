@@ -22,12 +22,12 @@ export default class TaskEdit extends AbstractComponent {
   }
 
   _subscribeOnEvents() {
-    const dateDeadline = this.getElement().querySelector(`.card__date-deadline`);
-    const dateDeadlineInput = this.getElement().querySelector(`.card__date`);
+    const dateContainer = this.getElement().querySelector(`.card__date-deadline`);
+    const dateInput = this.getElement().querySelector(`.card__date`);
     const dateStatus = this.getElement().querySelector(`.card__date-status`);
 
-    const repeatDays = this.getElement().querySelector(`.card__repeat-days`);
-    const repeatDaysInputs = this.getElement().querySelectorAll(`.card__repeat-day-input`);
+    const repeatContainer = this.getElement().querySelector(`.card__repeat-days`);
+    const repeatInputs = this.getElement().querySelectorAll(`.card__repeat-day-input`);
     const repeatStatus = this.getElement().querySelector(`.card__repeat-status`);
 
     const addToArchive = this.getElement().querySelector(`.card__btn--archive`);
@@ -62,41 +62,47 @@ export default class TaskEdit extends AbstractComponent {
       }
     });
 
-    this.getElement().querySelector(`.card__colors-wrap`).addEventListener(`click`, (evt) => {
-      if (evt.target.nodeName === `INPUT`) {
-        this.getElement().classList.remove(`card--black`, `card--yellow`, `card--blue`, `card--pink`, `card--green`);
-        this.getElement().classList.add(`card--${evt.target.value}`);
-      }
+    this.getElement().querySelector(`.card__colors-wrap`).addEventListener(`change`, (evt) => {
+      this.getElement().classList.remove(`card--black`, `card--yellow`, `card--blue`, `card--pink`, `card--green`);
+      this.getElement().classList.add(`card--${evt.target.value}`);
     });
 
     this.getElement().querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, () => {
-      if (!(repeatDays.classList.contains(`visually-hidden`))) {
+      if (!(repeatContainer.classList.contains(`visually-hidden`))) {
+        this.getElement().classList.remove(`card--repeat`);
         repeatStatus.textContent = `no`;
-        repeatDays.classList.add(`visually-hidden`);
-        repeatDaysInputs.forEach((day) => {
-          day.checked = false;
-        });
+        this._setDefaultDayValue(repeatInputs);
+        repeatContainer.classList.add(`visually-hidden`);
       }
 
-      const newStatus = dateDeadline.classList.contains(`visually-hidden`) ? `yes` : `no`;
-      dateDeadline.classList.toggle(`visually-hidden`);
-      dateStatus.textContent = newStatus;
-      dateDeadlineInput.value = ``;
+      if (dateContainer.classList.contains(`visually-hidden`)) {
+        dateContainer.classList.remove(`visually-hidden`);
+        dateStatus.textContent = `yes`;
+        dateInput.value = this._dueDate !== null ? this._dueDate : Date.now();
+      } else {
+        dateContainer.classList.add(`visually-hidden`);
+        dateStatus.textContent = `no`;
+        dateInput.value = null;
+      }
     });
 
     this.getElement().querySelector(`.card__repeat-toggle`).addEventListener(`click`, () => {
-      if (!(dateDeadline.classList.contains(`visually-hidden`))) {
+      this.getElement().classList.toggle(`card--repeat`);
+
+      if (!(dateContainer.classList.contains(`visually-hidden`))) {
         dateStatus.textContent = `no`;
-        dateDeadline.classList.add(`visually-hidden`);
-        dateDeadlineInput.value = ``;
+        dateContainer.classList.add(`visually-hidden`);
+        dateInput.value = null;
       }
 
-      const newDate = repeatDays.classList.contains(`visually-hidden`) ? `yes` : `no`;
-      repeatDays.classList.toggle(`visually-hidden`);
-      repeatStatus.textContent = newDate;
-      repeatDaysInputs.forEach((day) => {
-        day.checked = false;
-      });
+      if (repeatContainer.classList.contains(`visually-hidden`)) {
+        repeatContainer.classList.remove(`visually-hidden`);
+        repeatStatus.textContent = `yes`;
+      } else {
+        repeatContainer.classList.add(`visually-hidden`);
+        repeatStatus.textContent = `no`;
+        this._setDefaultDayValue(repeatInputs);
+      }
     });
 
     addToArchive.addEventListener(`click`, () => {
@@ -105,6 +111,12 @@ export default class TaskEdit extends AbstractComponent {
 
     addToFavorite.addEventListener(`click`, () => {
       addToFavorite.classList.toggle(`card__btn--disabled`);
+    });
+  }
+
+  _setDefaultDayValue(days) {
+    days.forEach((day) => {
+      day.checked = false;
     });
   }
 
