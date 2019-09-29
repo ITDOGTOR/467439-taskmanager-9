@@ -8,7 +8,7 @@ export default class TaskEdit extends AbstractComponent {
   constructor({description, dueDate, repeatingDays, tags, color, isFavorite, isArchive}) {
     super();
     this._description = description;
-    this._dueDate = dueDate ? new Date(dueDate) : null;
+    this._dueDate = dueDate !== null ? new Date(dueDate) : null;
     this._repeatingDays = repeatingDays;
     this._tags = tags;
     this._color = color;
@@ -16,6 +16,8 @@ export default class TaskEdit extends AbstractComponent {
     this._isArchive = isArchive;
 
     this._isRepeat = Object.values(this._repeatingDays).some((it) => it === true);
+    this._isDeadLine = moment(Date.now()).subtract(1, `days`).isAfter(this._dueDate);
+
     this._subscribeOnEvents();
   }
 
@@ -107,7 +109,7 @@ export default class TaskEdit extends AbstractComponent {
   }
 
   getTemplate() {
-    return `<article class="card card--edit card--${this._color} ${this._isRepeat ? `card--repeat` : ``}">
+    return `<article class="card card--edit card--${this._color} ${this._isRepeat ? `card--repeat` : ``} ${this._isDeadLine ? `card--deadline` : ``}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -134,6 +136,8 @@ export default class TaskEdit extends AbstractComponent {
                 class="card__text"
                 placeholder="Start typing your text here..."
                 name="text"
+                maxlength="140"
+                required
               >${this._description}</textarea>
             </label>
           </div>
