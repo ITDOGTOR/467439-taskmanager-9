@@ -4,6 +4,7 @@ import FiltersContainer from '../src/components/filters-container.js';
 import Filter from '../src/components/filter.js';
 import Statistics from '../src/components/statistics.js';
 import BoardController from '../src/controllers/board-controller.js';
+import SearchController from '../src/controllers/search-controller.js';
 
 import {taskMocks, filtersList} from '../src/data.js';
 import {renderElement} from '../src/util.js';
@@ -21,13 +22,11 @@ const renderFilter = (filter) => {
 
   renderElement(filtersContainer, filterElement.getElement());
 };
-
 const renderFilters = (filters) => filters.forEach((filter) => renderFilter(filter));
 
 const onDataChange = (tasks) => {
   copyTasks = tasks;
 };
-
 let copyTasks = taskMocks;
 
 const mainContainer = document.querySelector(`.main`);
@@ -38,7 +37,7 @@ const search = new Search();
 const filtersContainer = new FiltersContainer();
 const statistics = new Statistics();
 
-statistics.getElement().classList.add(`visually-hidden`);
+statistics.getElement().classList.add(`visually-hidden`); // Скрывает контейнер со статистикой при отрисовке страницы
 
 renderElement(menuContainer, menu.getElement());
 renderElement(mainContainer, search.getElement());
@@ -46,7 +45,15 @@ renderElement(mainContainer, filtersContainer.getElement());
 renderFilters(filtersList);
 renderElement(mainContainer, statistics.getElement());
 
+const onSearchBackButtonClick = () => {
+  statistics.getElement().classList.add(`visually-hidden`);
+  searchController._hide();
+  boardController._show(copyTasks);
+};
+
 const boardController = new BoardController(mainContainer, onDataChange);
+const searchController = new SearchController(mainContainer, search, onSearchBackButtonClick, onDataChange);
+
 boardController._show(copyTasks);
 
 menu.getElement().addEventListener(`change`, (evt) => {
@@ -70,4 +77,10 @@ menu.getElement().addEventListener(`change`, (evt) => {
       menu.getElement().querySelector(`#${TASKS}`).checked = true; // Возвращает состояние checked TASKS
       break;
   }
+});
+
+search.getElement().addEventListener(`click`, () => {
+  statistics.getElement().classList.add(`visually-hidden`);
+  boardController._hide();
+  searchController._show(copyTasks);
 });

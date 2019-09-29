@@ -52,6 +52,7 @@ export default class BoardController {
   }
 
   _renderBoard() {
+    this._taskList.getElement().innerHTML = ``;
     this._loadMoreButton.removeElement();
 
     if (!this._tasks.length) {

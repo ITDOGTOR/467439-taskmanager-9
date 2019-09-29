@@ -91,7 +91,6 @@ export default class TaskListController {
       this._sortedTask[sortedTaskIndex] = newData;
     }
 
-    this._container.innerHTML = ``;
     this._onDataChangeMain(this._tasks);
   }
 
