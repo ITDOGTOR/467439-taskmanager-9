@@ -160,6 +160,13 @@ body {
   opacity: 0.7;
 }
 
+.board__filter--active,
+.board__filter--active:hover,
+.board__filter--active:focus {
+  text-shadow: 1px 0 0 #000000;
+  opacity: 1;
+}
+
 .board__tasks {
   display: flex;
   flex-flow: row wrap;
