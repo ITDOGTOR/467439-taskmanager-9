@@ -25,11 +25,53 @@ export default class TaskController {
     this._taskView = new Task(data);
     this._taskEdit = new TaskEdit(data);
 
+    this._updateData = this._getNewTaskData();
+
     this.init(mode);
   }
 
   _replaceConditionTask(condition1, condition2) {
     this._container.replaceChild(condition1, condition2);
+  }
+
+  _getNewTaskData() {
+    const addTo = (container) => container.classList.contains(`card__btn--disabled`) ? true : false;
+
+    const dateStatus = this._taskEdit.getElement().querySelector(`.card__date-status`);
+    const formData = new FormData(this._taskEdit.getElement().querySelector(`.card__form`));
+
+    const entry = {
+      description: formData.get(`text`),
+      color: formData.get(`color`),
+      tags: new Set(formData.getAll(`hashtag`)),
+      dueDate: dateStatus.innerText === `YES` ? new Date(isFinite(formData.get(`date`)) ? parseInt(formData.get(`date`), 10) : formData.get(`date`)) : null,
+      repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
+        acc[it] = true;
+        return acc;
+      }, {
+        'mo': false,
+        'tu': false,
+        'we': false,
+        'th': false,
+        'fr': false,
+        'sa': false,
+        'su': false,
+      }),
+      isFavorite: addTo(this._taskEdit.getElement().querySelector(`.card__btn--favorites`)),
+      isArchive: addTo(this._taskEdit.getElement().querySelector(`.card__btn--archive`)),
+    };
+
+    return entry;
+  }
+
+  _setBooleanValue(evt, value) {
+    if (evt.currentTarget.classList.contains(`card__btn--disabled`)) {
+      evt.currentTarget.classList.remove(`card__btn--disabled`);
+      this._updateData[value] = false;
+    } else {
+      evt.currentTarget.classList.add(`card__btn--disabled`);
+      this._updateData[value] = true;
+    }
   }
 
   init(mode) {
@@ -58,9 +100,15 @@ export default class TaskController {
       document.removeEventListener(`keydown`, onEscKeyDown);
     };
 
-    const addTo = (container) => container.classList.contains(`card__btn--disabled`) ? true : false;
+    this._taskView.getElement().querySelector(`.card__btn--archive`).addEventListener(`click`, (evt) => {
+      this._setBooleanValue(evt, `isArchive`);
+      this._onDataChange(this._updateData, this._data);
+    });
 
-    const dateStatus = this._taskEdit.getElement().querySelector(`.card__date-status`);
+    this._taskView.getElement().querySelector(`.card__btn--favorites`).addEventListener(`click`, (evt) => {
+      this._setBooleanValue(evt, `isFavorite`);
+      this._onDataChange(this._updateData, this._data);
+    });
 
     this._taskView.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
@@ -74,36 +122,16 @@ export default class TaskController {
       document.removeEventListener(`keydown`, onEscKeyDown);
     });
 
-    this._taskEdit.getElement().querySelector(`textarea`).addEventListener(`blur`, () => {
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
+    if (mode === DEFAULT) {
+      this._taskEdit.getElement().querySelector(`textarea`).addEventListener(`blur`, () => {
+        document.addEventListener(`keydown`, onEscKeyDown);
+      });
+    }
 
     this._taskEdit.getElement().querySelector(`.card__form`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
 
-      const formData = new FormData(this._taskEdit.getElement().querySelector(`.card__form`));
-
-      const entry = {
-        description: formData.get(`text`),
-        color: formData.get(`color`),
-        tags: new Set(formData.getAll(`hashtag`)),
-        dueDate: dateStatus.innerText === `YES` ? new Date(isFinite(formData.get(`date`)) ? parseInt(formData.get(`date`), 10) : formData.get(`date`)) : null,
-        repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
-          acc[it] = true;
-          return acc;
-        }, {
-          'mo': false,
-          'tu': false,
-          'we': false,
-          'th': false,
-          'fr': false,
-          'sa': false,
-          'su': false,
-        }),
-        isFavorite: addTo(this._taskEdit.getElement().querySelector(`.card__btn--favorites`)),
-        isArchive: addTo(this._taskEdit.getElement().querySelector(`.card__btn--archive`)),
-      };
-
+      const entry = this._getNewTaskData();
       this._onDataChange(entry, mode === DEFAULT ? this._data : null);
 
       document.removeEventListener(`keydown`, onEscKeyDown);
