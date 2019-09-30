@@ -48,14 +48,14 @@ export default class SearchController {
 
       this._searchResultInfo = new SearchResultInfo({title: text, count: tasks.length});
       renderElement(this._searchResultGroup.getElement(), this._searchResultInfo.getElement(), AFTERBEGIN);
-      this._taskListController._renderTasks(tasks, tasks.slice(tasks.length));
+      this._taskListController._renderTasks(tasks, tasks);
     }
   }
 
   _onDataChange(tasks) {
     this._tasks = tasks;
     this._onDataChangeMain(tasks);
-    this._taskListController._renderTasks(tasks, tasks.slice(tasks.length));
+    this._taskListController._renderTasks(tasks, tasks);
     this._searchResultInfo._updateCount(tasks.length);
   }
 

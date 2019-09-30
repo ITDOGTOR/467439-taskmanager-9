@@ -1,4 +1,5 @@
 import TaskController, {Mode as TaskControllerMode} from '../controllers/task-controller.js';
+import FiltersController from '../controllers/filters-controller.js';
 import {unrenderElement} from '../util.js';
 
 export default class TaskListController {
@@ -7,18 +8,18 @@ export default class TaskListController {
     this._onDataChangeMain = onDataChange;
 
     this._tasks = [];
-    this._sortedTask = [];
     this._shownTasksCount = null;
     this._creatingTask = null;
     this._subscriptions = [];
 
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
+
+    this._filtersController = new FiltersController(document.querySelector(`.main__filter`));
   }
 
-  _renderTasks(visibleTasks, invisibleTasks = []) {
-    this._tasks = [...visibleTasks, ...invisibleTasks];
-    this._sortedTask = [...visibleTasks, ...invisibleTasks];
+  _renderTasks(visibleTasks, allTasks) {
+    this._tasks = allTasks;
     this._subscriptions = [];
     this._creatingTask = null;
     this._shownTasksCount = visibleTasks.length;
@@ -71,27 +72,27 @@ export default class TaskListController {
 
   _onDataChange(newData, oldData) {
     const taskIndex = this._tasks.findIndex((task) => task === oldData);
-    const sortedTaskIndex = taskIndex;
 
     // Если новая карточка была удалена без сохранения
     if (newData === null && oldData === null) {
       this._onDataChangeMain(this._tasks);
       return;
+
     // Если любая открытая карточка была удалена
     } else if (newData === null) {
       this._tasks = [...this._tasks.slice(0, taskIndex), ...this._tasks.slice(taskIndex + 1)];
-      this._sortedTask = [...this._sortedTask.slice(0, sortedTaskIndex), ...this._sortedTask.slice(sortedTaskIndex + 1)];
+
     // Если была создана новая карточка
     } else if (oldData === null) {
       this._tasks = [newData, ...this._tasks];
-      this._sortedTask = [newData, ...this._sortedTask];
+
     // Если были изменены данные любой открытой карточки
     } else {
       this._tasks[taskIndex] = newData;
-      this._sortedTask[sortedTaskIndex] = newData;
     }
 
     this._onDataChangeMain(this._tasks);
+    this._filtersController._updateFilters(this._tasks);
   }
 
   _onChangeView() {
