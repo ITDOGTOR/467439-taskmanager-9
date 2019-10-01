@@ -41,4 +41,12 @@ const getRandomArrayElement = (array) => array[Math.floor((Math.random() * array
 const getRandomDate = () => Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000;
 const getRandomBoolean = () => Boolean(Math.random() > 0.5);
 
-export {createElement, renderElement, unrenderElement, getRandomInt, getRandomArrayElement, getRandomDate, getRandomBoolean, Key, Position};
+const getRandomColor = () => {
+  const r = Math.floor(Math.random() * (256));
+  const g = Math.floor(Math.random() * (256));
+  const b = Math.floor(Math.random() * (256));
+
+  return `#` + r.toString(16) + g.toString(16) + b.toString(16);
+};
+
+export {createElement, renderElement, unrenderElement, getRandomInt, getRandomArrayElement, getRandomDate, getRandomBoolean, getRandomColor, Key, Position};

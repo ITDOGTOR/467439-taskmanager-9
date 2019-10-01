@@ -26,7 +26,7 @@ export default class TaskListController {
 
     this._container.innerHTML = ``;
     // Удаляет все календари flatpickr
-    document.querySelectorAll(`.flatpickr-calendar`).forEach((element) => unrenderElement(element));
+    document.querySelectorAll(`.flatpickr-calendar:not(.rangeMode)`).forEach((element) => unrenderElement(element));
     visibleTasks.forEach((task) => this._renderOneTask(task));
   }
 

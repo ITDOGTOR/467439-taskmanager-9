@@ -37,7 +37,7 @@ renderElement(mainContainer, filtersContainer.getElement());
 renderElement(mainContainer, statistics.getElement());
 
 const onSearchBackButtonClick = () => {
-  statistics.getElement().classList.add(`visually-hidden`);
+  statistics._hide();
   searchController._hide();
   boardController._show(copyTasks);
 };
@@ -58,17 +58,17 @@ menu.getElement().addEventListener(`change`, (evt) => {
 
   switch (evt.target.id) {
     case TASKS:
-      statistics.getElement().classList.add(`visually-hidden`);
+      statistics._hide();
       searchController._hide();
       boardController._show(copyTasks);
       break;
     case STATISTICS:
       boardController._hide();
       searchController._hide();
-      statistics.getElement().classList.remove(`visually-hidden`);
+      statistics._show(copyTasks);
       break;
     case ADD_NEW_TASKS:
-      statistics.getElement().classList.add(`visually-hidden`);
+      statistics._hide();
       searchController._hide();
       boardController._show(copyTasks);
       boardController._renderNewTask();
@@ -78,7 +78,7 @@ menu.getElement().addEventListener(`change`, (evt) => {
 });
 
 search.getElement().addEventListener(`click`, () => {
-  statistics.getElement().classList.add(`visually-hidden`);
+  statistics._hide();
   boardController._hide();
   searchController._show(copyTasks);
 });
